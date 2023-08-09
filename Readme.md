@@ -38,7 +38,7 @@ Looking at internal photos from FCCID, it looks like there's a serial port in th
 ![image](https://github.com/skyler-ferrante/Gigastone-RE/assets/24577503/433ee296-e97e-460f-9b0a-e1deccdd58d3)
 
 Soldering to the board and watching for serial confirms this.
-I used a "USB to TTL" adapter to get serial from USB.
+I used a "USB to TTL" adapter to get serial from USB, and Putty to act as my terminal.
 Using a multimeter in continuity mode showed the leftmost pin was ground.
 
 Watching boot with baud set to 115200
