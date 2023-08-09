@@ -165,3 +165,9 @@ From memory address `0x9f300000` to `0x9f3dd320` there seems to be a Linux Kerne
 ```
 output.bin: u-boot legacy uImage, Linux Kernel Image, Linux/MIPS, OS Kernel Image (lzma), 905965 bytes, Wed Feb 26 04:14:51 2014, Load Address: 0x80002000, Entry Point: 0x801EA0E0, Header CRC: 0x0F2D2E50, Data CRC: 0x85246A37
 ```
+
+On first attempt, trying to get a linux shell from by setting the bootargs doesn't seem to work
+```
+setenv bootargs "console=115200 root=31:02 rootfstype=squashfs init=/bin/busybox mtdparts=ar7240-nor0:256k(u-boot),64k(u-boot-env),2752k(rootfs),896k(uImage),64k(NVRAM),64k(ART)"
+setenv nc "setenv stdin serial;setenv stdout serial;setenv stderr serial"
+```
