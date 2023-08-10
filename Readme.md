@@ -6,6 +6,8 @@ Gigastone is a electronics brand based in Taiwan.
 [Amazon link1.](https://www.amazon.com/Gigastone-GS-TR1-R-Wireless-Travel-Router/dp/B01DR04V90)
 [Amazon link2.](https://www.amazon.com/Gigastone-TR1-Wireless-Extension-Processor/dp/B0BVTYYDQH/)
 
+Inside the Amazon link we can see it uses the AR9331 (Qualcomm Atheros) CPU.
+
 ![41-czovIRFL _AC_SX522_](https://github.com/skyler-ferrante/Gigastone-RE/assets/24577503/36e0f064-4b5e-4bf8-bdb5-3b70db17efa8)
 
 # Web interface
@@ -37,9 +39,13 @@ Looking at internal photos from FCCID, it looks like there's a serial port in th
 
 ![image](https://github.com/skyler-ferrante/Gigastone-RE/assets/24577503/433ee296-e97e-460f-9b0a-e1deccdd58d3)
 
+To find which pin is ground, we can use a multimeter in continuity mode.
+The leftmost pin (from the picture) seems to be ground.
+The rightmost pin seems to be power.
+
 Soldering to the board and watching for serial confirms this.
 I used a "USB to TTL" adapter to get serial from USB, and Putty to act as my terminal.
-Using a multimeter in continuity mode showed the leftmost pin was ground.
+I only attached GND, TX, and RX.
 
 Watching boot with baud set to 115200
 ```
