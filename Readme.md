@@ -10,7 +10,12 @@ Inside the Amazon link we can see it uses the AR9331 (Qualcomm Atheros) CPU.
 
 ![41-czovIRFL _AC_SX522_](https://github.com/skyler-ferrante/Gigastone-RE/assets/24577503/36e0f064-4b5e-4bf8-bdb5-3b70db17efa8)
 
-# Web interface
+This document covers basic software and hardware RE of this device.
+
+## Web interface
+
+![image](https://github.com/skyler-ferrante/Gigastone-RE/assets/24577503/50eb9472-1273-40b5-8456-528c9d6099e8)
+
 
 After logging in with the default credentials, I watched network traffic from dev tools while setting the SSID.
 It seems the device uses `tr1.cgi?cgi=2` for configuration.
@@ -31,7 +36,9 @@ This API seems to be hittable from a remote IP, when not logged in (even with de
 
 ![image](https://github.com/skyler-ferrante/Gigastone-RE/assets/24577503/b886fa58-2fd6-488c-8a4e-b212a7ff1b4d)
 
-# Hardware/Serial
+1-12 seem to be valid values for cgi. 
+
+## Hardware/Serial
 
 We can find Gigastones filing for R101 in the [FCC ID](https://fccid.io/PLE-TRR1011) database
 
@@ -172,8 +179,8 @@ From memory address `0x9f300000` to `0x9f3dd320` there seems to be a Linux Kerne
 output.bin: u-boot legacy uImage, Linux Kernel Image, Linux/MIPS, OS Kernel Image (lzma), 905965 bytes, Wed Feb 26 04:14:51 2014, Load Address: 0x80002000, Entry Point: 0x801EA0E0, Header CRC: 0x0F2D2E50, Data CRC: 0x85246A37
 ```
 
-On first attempt, trying to get a linux shell from by setting the bootargs doesn't seem to work
-```
-setenv bootargs "console=115200 root=31:02 rootfstype=squashfs init=/bin/busybox mtdparts=ar7240-nor0:256k(u-boot),64k(u-boot-env),2752k(rootfs),896k(uImage),64k(NVRAM),64k(ART)"
-setenv nc "setenv stdin serial;setenv stdout serial;setenv stderr serial"
-```
+I also grabbed the memory at 0x80002000, which seems to be the firmware file.
+One issue I found, is that Ghidra does not support the version of MIPS this processor uses, so it fails to disassemble all instructions.
+
+Trying to get a linux shell from by setting the bootargs doesn't seem to work.
+I tried different variations of setting init to `/bin/sh`, but they all fail.
